@@ -2,11 +2,15 @@ package com.notebook.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+<<<<<<< HEAD
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+=======
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
 
 public class UserRegistrationDto {
+
     @NotEmpty(message = "Username should not be empty")
     private String username;
 
@@ -21,6 +25,13 @@ public class UserRegistrationDto {
     @Email(message = "Invalid email format")
     private String email;
 
+<<<<<<< HEAD
+=======
+    // ── Constructors ──────────────────────────────────────────
+    public UserRegistrationDto() {}
+
+    // ── Getters & Setters ─────────────────────────────────────
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 

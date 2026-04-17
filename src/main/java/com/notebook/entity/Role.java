@@ -1,13 +1,12 @@
 package com.notebook.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.util.List;
 
 @Entity
 @Table(name = "roles")
 public class Role {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,6 +17,10 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
 
+<<<<<<< HEAD
+=======
+    // ── Constructors ──────────────────────────────────────────
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
     public Role() {}
 
     public Role(Long id, String name, List<User> users) {
@@ -26,6 +29,10 @@ public class Role {
         this.users = users;
     }
 
+<<<<<<< HEAD
+=======
+    // ── Getters & Setters ─────────────────────────────────────
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

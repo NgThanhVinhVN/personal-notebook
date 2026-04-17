@@ -1,8 +1,6 @@
 package com.notebook.dto;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-import lombok.Setter;
 
 public class NotebookDto {
 
@@ -17,6 +15,7 @@ public class NotebookDto {
     @NotEmpty(message = "Danh mục không được để trống")
     private String category;
 
+<<<<<<< HEAD
     /** Comma-separated tag string from the multi-tag selector */
     private String tags;
 
@@ -25,6 +24,12 @@ public class NotebookDto {
 
     private boolean pinned;
 
+=======
+    // ── Constructors ──────────────────────────────────────────
+    public NotebookDto() {}
+
+    // ── Getters & Setters ─────────────────────────────────────
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -36,6 +41,7 @@ public class NotebookDto {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+<<<<<<< HEAD
 
     public String getTags() { return tags; }
     public void setTags(String tags) { this.tags = tags; }
@@ -45,4 +51,6 @@ public class NotebookDto {
 
     public boolean isPinned() { return pinned; }
     public void setPinned(boolean pinned) { this.pinned = pinned; }
+=======
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
 }

@@ -1,14 +1,13 @@
 package com.notebook.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,9 +35,17 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notebook> notebooks = new ArrayList<>();
 
+<<<<<<< HEAD
     public User() {}
 
     public User(Long id, String username, String password, String fullName, String email, List<Role> roles, List<Notebook> notebooks) {
+=======
+    // ── Constructors ──────────────────────────────────────────
+    public User() {}
+
+    public User(Long id, String username, String password, String fullName,
+                String email, List<Role> roles, List<Notebook> notebooks) {
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
         this.id = id;
         this.username = username;
         this.password = password;
@@ -48,6 +55,10 @@ public class User {
         this.notebooks = notebooks;
     }
 
+<<<<<<< HEAD
+=======
+    // ── Getters & Setters ─────────────────────────────────────
+>>>>>>> 6d61c47 (Ket noi sang MySQL)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
