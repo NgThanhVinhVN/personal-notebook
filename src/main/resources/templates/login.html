@@ -1,55 +1,77 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - Personal Notebook</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập — MyNotebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body class="d-flex align-items-center bg-light" style="min-height: 100vh;">
+<body>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card p-5">
-                <div class="text-center mb-4">
-                    <h2 class="font-weight-bold text-primary">Đăng nhập</h2>
-                    <p class="text-muted">Chào mừng trở lại! Vui lòng đăng nhập</p>
-                </div>
+<div class="auth-wrapper">
+  <div class="auth-card">
 
-                <div th:if="${param.error}" class="alert alert-danger text-center">
-                    Tên đăng nhập hoặc mật khẩu không hợp lệ!
-                </div>
-                <div th:if="${param.logout}" class="alert alert-success text-center">
-                    Bạn đã đăng xuất thành công!
-                </div>
-
-                <form th:action="@{/login}" method="post">
-                    <div class="mb-3">
-                        <label for="username" class="form-label text-muted fw-bold">Tên đăng nhập</label>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="Nhập tên đăng nhập" required autofocus>
-                    </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label text-muted fw-bold">Mật khẩu</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Nhập mật khẩu" required>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">Đăng nhập</button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-4 pt-3 border-top">
-                    <p class="text-muted mb-1">Chưa có tài khoản?</p>
-                    <a th:href="@{/register}" class="text-decoration-none fw-bold">Đăng ký ngay</a>
-                    <br>
-                    <a th:href="@{/}" class="text-decoration-none text-muted small">< Trở về trang chủ</a>
-                </div>
-            </div>
-        </div>
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon"><i class="bi bi-journal-text"></i></div>
+      <h2>Chào mừng trở lại!</h2>
+      <p>Đăng nhập vào tài khoản MyNotebook của bạn</p>
     </div>
+
+    <!-- Alerts -->
+    <div th:if="${param.error}"
+         style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.25);
+                border-radius:10px;padding:.75rem 1rem;font-size:.85rem;font-weight:500;
+                text-align:center;margin-bottom:1.25rem;">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      Tên đăng nhập hoặc mật khẩu không đúng!
+    </div>
+    <div th:if="${param.logout}"
+         style="background:rgba(34,197,94,.1);color:#15803d;border:1px solid rgba(34,197,94,.25);
+                border-radius:10px;padding:.75rem 1rem;font-size:.85rem;font-weight:500;
+                text-align:center;margin-bottom:1.25rem;">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      Đã đăng xuất thành công!
+    </div>
+
+    <!-- Form -->
+    <form th:action="@{/login}" method="post" class="auth-form">
+      <div class="form-group">
+        <label class="form-label" for="username">Tên đăng nhập</label>
+        <input type="text" class="form-control" id="username" name="username"
+               placeholder="Nhập tên đăng nhập" required autofocus autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Mật khẩu</label>
+        <input type="password" class="form-control" id="password" name="password"
+               placeholder="Nhập mật khẩu" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="auth-submit" style="margin-top:.5rem;">
+        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Chưa có tài khoản? <a th:href="@{/register}">Đăng ký miễn phí →</a><br>
+      <a th:href="@{/}" style="color:var(--text-muted);font-size:.8rem;">&larr; Về trang chủ</a>
+    </div>
+  </div>
 </div>
 
+<script>
+  (function() {
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+
+    if (window.history.replaceState) {
+      const url = new URL(window.location);
+      ['error', 'logout'].forEach(param => url.searchParams.delete(param));
+      window.history.replaceState(null, null, url.toString());
+    }
+  })();
+</script>
 </body>
 </html>
