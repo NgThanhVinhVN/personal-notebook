@@ -1,86 +1,79 @@
 package com.notebook.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotebookDto {
 
-	private Long id;
+    private Long id;
 
-	@NotEmpty(message = "Tiêu đề không được để trống")
-	private String title;
+    private String title;
 
-	@NotEmpty(message = "Nội dung không được để trống")
-	private String content;
+    private String content;
 
-	@NotEmpty(message = "Danh mục không được để trống")
-	private String category;
+    /**
+     * Danh sách tên category được chọn từ form (multi-chip selector).
+     * Submitted dưới dạng nhiều hidden input cùng name="categoryNames".
+     */
+    private List<String> categoryNames = new ArrayList<>();
 
-	/** Comma-separated tag string from the multi-tag selector */
-	private String tags;
+    /** Màu hex — tự động tính phía server, ẩn trong form */
+    private String color;
 
-	/** Primary color hex code selected by the user */
-	private String color;
+    private boolean pinned;
 
-	private boolean pinned;
+    // ── Constructors ──────────────────────────────────────────────
 
-	// ── Constructors ──────────────────────────────────────────
-	public NotebookDto() {
-	}
+    public NotebookDto() {
+    }
 
-	// ── Getters & Setters ─────────────────────────────────────
-	public Long getId() {
-		return id;
-	}
+    // ── Getters & Setters ─────────────────────────────────────────
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public List<String> getCategoryNames() {
+        return categoryNames;
+    }
 
-	public String getTags() {
-		return tags;
-	}
+    public void setCategoryNames(List<String> categoryNames) {
+        this.categoryNames = categoryNames != null ? categoryNames : new ArrayList<>();
+    }
 
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
+    public String getColor() {
+        return color;
+    }
 
-	public String getColor() {
-		return color;
-	}
+    public void setColor(String color) {
+        this.color = color;
+    }
 
-	public void setColor(String color) {
-		this.color = color;
-	}
+    public boolean isPinned() {
+        return pinned;
+    }
 
-	public boolean isPinned() {
-		return pinned;
-	}
-
-	public void setPinned(boolean pinned) {
-		this.pinned = pinned;
-	}
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
 }

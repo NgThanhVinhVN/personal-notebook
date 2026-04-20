@@ -49,7 +49,13 @@
                     <div class="card h-100 border-0 shadow-sm border-start border-4 border-primary">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
-                                <span class="badge bg-light text-dark border mb-2" th:text="${notebook.category}"></span>
+                                <div class="mb-2">
+                                  <span class="badge bg-light text-dark border me-1"
+                                        th:each="cat : ${notebook.categories}"
+                                        th:text="${cat.name}"></span>
+                                  <span th:if="${notebook.categories.empty}"
+                                        class="badge bg-secondary">Chưa phân loại</span>
+                                </div>
                                 <small class="text-muted"><i class="bi bi-person text-primary"></i> <b th:text="${notebook.user.username}"></b></small>
                             </div>
                             <h5 class="card-title fw-bold mt-2" th:text="${notebook.title}"></h5>

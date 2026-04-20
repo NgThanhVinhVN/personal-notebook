@@ -1,252 +1,535 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tạo hoặc chỉnh sửa ghi chú — MyNotebook">
-  <title th:text="${notebook.id == null ? 'Tạo ghi chú mới' : 'Chỉnh sửa ghi chú'} + ' — MyNotebook'">Ghi chú — MyNotebook</title>
+  <title th:text="${notebook.id == null ? 'Tạo ghi chú mới' : 'Chỉnh sửa ghi chú'} + ' — MyNotebook'">Ghi chú —
+    MyNotebook</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <style>
+    /* ── Category chip selector ───────────────────────────────── */
+    .cat-selected-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      min-height: 2.4rem;
+      padding: .5rem .6rem;
+      background: var(--bg-raised);
+      border: 1.5px solid var(--border-mid);
+      border-radius: 10px;
+      margin-bottom: .75rem;
+      transition: border-color .2s;
+    }
+
+    .cat-selected-area:focus-within {
+      border-color: var(--brand-500);
+    }
+
+    .cat-selected-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .25rem .65rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 600;
+      border: 1.5px solid;
+      cursor: default;
+      animation: chipIn .18s ease;
+    }
+
+    @keyframes chipIn {
+      from {
+        opacity: 0;
+        transform: scale(.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .cat-selected-chip .chip-remove {
+      cursor: pointer;
+      opacity: .7;
+      transition: opacity .15s;
+      font-size: .75rem;
+      margin-left: .1rem;
+    }
+
+    .cat-selected-chip .chip-remove:hover {
+      opacity: 1;
+    }
+
+    .cat-placeholder {
+      font-size: .82rem;
+      color: var(--text-muted);
+      align-self: center;
+    }
+
+    /* suggestion chips */
+    .cat-suggestions-label {
+      font-size: .77rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: .4rem;
+    }
+
+    .cat-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: .75rem;
+    }
+
+    .cat-suggest-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .28rem .7rem;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 500;
+      border: 1.5px solid;
+      background: transparent;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .cat-suggest-btn:hover {
+      opacity: .8;
+      transform: translateY(-1px);
+    }
+
+    .cat-suggest-btn.selected {
+      opacity: .4;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* custom input row */
+    .cat-add-row {
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+    }
+
+    .cat-add-input {
+      flex: 1;
+      padding: .45rem .8rem;
+      border: 1.5px solid var(--border-mid);
+      border-radius: 8px;
+      background: var(--bg-raised);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: .88rem;
+      transition: border-color .2s;
+    }
+
+    .cat-add-input:focus {
+      outline: none;
+      border-color: var(--brand-500);
+    }
+
+    .cat-add-btn {
+      padding: .45rem 1rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--brand-500);
+      color: #fff;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+
+    .cat-add-btn:hover {
+      background: var(--brand-600);
+      transform: translateY(-1px);
+    }
+
+    .cat-error {
+      color: #ef4444;
+      font-size: .8rem;
+      margin-top: .4rem;
+      display: none;
+    }
+
+    .tag-dot-sm {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* ===== FIX INPUT UI ===== */
+
+    /* TITLE */
+    .title-input {
+      width: 100%;
+      font-size: 2rem;
+      font-weight: 800;
+      padding: .75rem 1rem;
+      border: 1.5px solid var(--border-mid);
+      border-radius: 12px;
+      background: var(--bg-raised);
+      transition: all .2s;
+    }
+
+    .title-input:hover {
+      border-color: var(--border-light);
+    }
+
+    .title-input:focus {
+      outline: none;
+      border-color: var(--brand-500);
+      background: var(--bg-surface);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+
+    /* TEXTAREA */
+    .form-textarea {
+      width: 100%;
+      border: 1.5px solid var(--border-mid);
+      border-radius: 12px;
+      padding: 1rem;
+      background: var(--bg-raised);
+      transition: all .2s;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .form-textarea:hover {
+      border-color: var(--border-light);
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--brand-500);
+      background: var(--bg-surface);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- ══ NAVBAR ══════════════════════════════════════════ -->
-<nav class="app-navbar">
-  <a th:href="@{/}" class="navbar-brand">
-    <div class="brand-icon"><i class="bi bi-journal-text"></i></div>
-    MyNotebook
-  </a>
-
-  <div class="navbar-actions" style="margin-left:auto;">
-    <button class="dark-toggle" id="darkToggle" title="Chuyển chế độ tối/sáng" type="button">
-      <i class="bi bi-moon-stars" id="darkIcon"></i>
-    </button>
-    <a th:href="@{/notebook}" class="user-menu-btn">
-      <i class="bi bi-arrow-left"></i> Quay lại
+  <!-- ══ NAVBAR ══════════════════════════════════════════ -->
+  <nav class="app-navbar">
+    <a th:href="@{/}" class="navbar-brand">
+      <div class="brand-icon"><i class="bi bi-journal-text"></i></div>
+      MyNotebook
     </a>
-  </div>
-</nav>
-
-<!-- ══ FORM PAGE ════════════════════════════════════════ -->
-<div class="form-page">
-  <div class="form-card">
-
-    <!-- Header -->
-    <div class="form-header">
-      <div>
-        <h1 class="form-title"
-            th:text="${notebook.id == null ? '✨ Tạo ghi chú mới' : '✏️ Chỉnh sửa ghi chú'}">
-          Ghi chú
-        </h1>
-        <p style="font-size:.85rem;color:var(--text-muted);margin-top:.3rem;"
-           th:text="${notebook.id == null ? 'Điền thông tin và lưu ghi chú của bạn.' : 'Cập nhật nội dung ghi chú.'}"></p>
-      </div>
-      <!-- Save-indicator dot -->
-      <div id="saveIndicator" style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--text-muted);opacity:0;transition:opacity .3s;">
-        <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
-        Đã tự lưu nháp
-      </div>
+    <div class="navbar-actions" style="margin-left:auto;">
+      <button class="dark-toggle" id="darkToggle" title="Chuyển chế độ tối/sáng" type="button">
+        <i class="bi bi-moon-stars" id="darkIcon"></i>
+      </button>
+      <a th:href="@{/notebook}" class="user-menu-btn">
+        <i class="bi bi-arrow-left"></i> Quay lại
+      </a>
     </div>
+  </nav>
 
-    <!-- FORM -->
-    <form th:action="@{/notebook/save}" method="post" th:object="${notebook}" id="noteForm" novalidate>
-      <input type="hidden" th:field="*{id}"/>
-      <input type="hidden" th:field="*{pinned}"/>
+  <!-- ══ FORM PAGE ════════════════════════════════════════ -->
+  <div class="form-page">
+    <div class="form-card">
 
-      <!-- Hidden fields for tags & color (populated by JS) -->
-      <input type="hidden" name="tags"  id="tagsInput"  th:field="*{tags}">
-      <input type="hidden" name="color" id="colorInput" th:field="*{color}">
-
-      <!-- ── TITLE ── -->
-      <div style="margin-bottom:1.5rem;">
-        <label class="form-label" for="titleField">Tiêu đề</label>
-        <input type="text" class="form-input" id="titleField" th:field="*{title}"
-               placeholder="Nhập tiêu đề ghi chú..." autocomplete="off" maxlength="200"
-               style="font-size:1.1rem;font-weight:600;">
-        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}"
-           style="color:#ef4444;font-size:.8rem;margin-top:.3rem;"></p>
+      <!-- Header -->
+      <div class="form-header">
+        <div>
+          <h1 class="form-title" th:text="${notebook.id == null ? 'Tạo ghi chú mới' : 'Chỉnh sửa ghi chú'}">
+            Ghi chú
+          </h1>
+          <p style="font-size:.85rem;color:var(--text-muted);margin-top:.3rem;"
+            th:text="${notebook.id == null ? 'Điền thông tin và lưu ghi chú của bạn.' : 'Cập nhật nội dung ghi chú.'}">
+          </p>
+        </div>
+        <!-- Save-indicator dot -->
+        <div id="saveIndicator"
+          style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--text-muted);opacity:0;transition:opacity .3s;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+          Đã tự lưu nháp
+        </div>
       </div>
 
-      <!-- ── CATEGORY ── -->
-      <div style="margin-bottom:1.5rem;">
-        <label class="form-label" for="categoryField">Danh mục</label>
-        <select class="form-input form-select" id="categoryField" th:field="*{category}" onchange="onCategoryChange(this.value)">
-          <option value="Cá nhân">🟢 Cá nhân</option>
-          <option value="Công việc">🔵 Công việc</option>
-          <option value="Học tập">🟡 Học tập</option>
-          <option value="Sức khỏe">🟣 Sức khỏe</option>
-          <option value="Khẩn cấp">🔴 Khẩn cấp</option>
-          <option value="Khác">⚫ Khác</option>
-        </select>
-        <p th:if="${#fields.hasErrors('category')}" th:errors="*{category}"
-           style="color:#ef4444;font-size:.8rem;margin-top:.3rem;"></p>
-      </div>
+      <!-- FORM -->
+      <form th:action="@{/notebook/save}" method="post" th:object="${notebook}" id="noteForm" novalidate>
+        <input type="hidden" th:field="*{id}" />
+        <input type="hidden" th:field="*{pinned}" />
+        <!-- color được tính server-side, giữ hidden để form binding hoạt động -->
+        <input type="hidden" id="colorInput" th:field="*{color}">
 
-      <!-- ── TAGS (multi-select clickable chips) ── -->
-      <div style="margin-bottom:1.5rem;">
-        <label class="form-label">Tags <span style="font-weight:400;text-transform:none;">(chọn nhiều)</span></label>
-        <div class="tag-selector" id="tagSelector">
-          <button type="button" class="tag-btn" data-tag="Cá nhân"   data-color="#22c55e" style="color:#22c55e;border-color:#22c55e;">
-            <span class="tag-dot" style="background:#22c55e;"></span> Cá nhân
-          </button>
-          <button type="button" class="tag-btn" data-tag="Công việc" data-color="#3b82f6" style="color:#3b82f6;border-color:#3b82f6;">
-            <span class="tag-dot" style="background:#3b82f6;"></span> Công việc
-          </button>
-          <button type="button" class="tag-btn" data-tag="Học tập"   data-color="#f59e0b" style="color:#f59e0b;border-color:#f59e0b;">
-            <span class="tag-dot" style="background:#f59e0b;"></span> Học tập
-          </button>
-          <button type="button" class="tag-btn" data-tag="Sức khỏe" data-color="#a855f7" style="color:#a855f7;border-color:#a855f7;">
-            <span class="tag-dot" style="background:#a855f7;"></span> Sức khỏe
-          </button>
-          <button type="button" class="tag-btn" data-tag="Khẩn cấp" data-color="#ef4444" style="color:#ef4444;border-color:#ef4444;">
-            <span class="tag-dot" style="background:#ef4444;"></span> Khẩn cấp
-          </button>
-          <button type="button" class="tag-btn" data-tag="Khác"     data-color="#64748b" style="color:#64748b;border-color:#64748b;">
-            <span class="tag-dot" style="background:#64748b;"></span> Khác
+        <!-- ── TITLE ── -->
+        <div style="margin-bottom:1.5rem;">
+          <label class="form-label" for="titleField">Tiêu đề Ghi chú</label>
+          <input type="text" class="form-input title-input" id="titleField" th:field="*{title}"
+            placeholder="Nhập tiêu đề ở đây..." autocomplete="off" maxlength="200">
+          <p th:if="${titleError}" th:text="${titleError}" style="color:#ef4444;font-size:.8rem;margin-top:.3rem;"></p>
+        </div>
+
+        <!-- ── CATEGORY MULTI-SELECTOR ── -->
+        <div style="margin-bottom:1.5rem;">
+          <label class="form-label">
+            Danh mục
+            <span style="font-weight:400;text-transform:none;">(chọn nhiều hoặc tạo mới)</span>
+          </label>
+
+          <!-- Chips đã chọn -->
+          <div class="cat-selected-area" id="selectedArea">
+            <span class="cat-placeholder" id="catPlaceholder">Chưa chọn danh mục nào...</span>
+          </div>
+
+          <!-- Hidden inputs — JS tự thêm/xóa -->
+          <div id="hiddenCatInputs"></div>
+
+          <!-- Gợi ý từ DB -->
+          <div class="cat-suggestions-label">Gợi ý:</div>
+          <div class="cat-suggestions" id="catSuggestions">
+            <button type="button" class="cat-suggest-btn" th:each="cat : ${allCategories}"
+              th:attr="data-name=${cat.name}, data-color=${cat.color}"
+              th:style="|color: ${cat.color}; border-color: ${cat.color};|">
+              <span class="tag-dot-sm" th:style="|background: ${cat.color};|"></span>
+              <span th:text="${cat.name}">Category</span>
+            </button>
+          </div>
+
+          <!-- Nhập danh mục tùy ý -->
+          <div class="cat-add-row">
+            <input type="text" class="cat-add-input" id="customCatInput" placeholder="Tên danh mục mới..."
+              maxlength="50" autocomplete="off">
+            <button type="button" class="cat-add-btn" onclick="addCustomCat()">
+              <i class="bi bi-plus"></i> Thêm
+            </button>
+          </div>
+
+          <!-- Error -->
+          <p class="cat-error" id="catError">Phải chọn ít nhất một danh mục</p>
+          <p th:if="${categoryError}" th:text="${categoryError}"
+            style="color:#ef4444;font-size:.8rem;margin-top:.4rem;"></p>
+        </div>
+
+        <!-- ── CONTENT ── -->
+        <div style="margin-bottom:1rem;">
+          <label class="form-label" for="contentField">Nội dung</label>
+          <textarea class="form-textarea" id="contentField" th:field="*{content}"
+            placeholder="Viết nội dung ghi chú của bạn tại đây..." rows="12" oninput="updateCharCount(this)"></textarea>
+          <div class="char-counter" id="charCounter" style="margin-top:0.5rem;">0 ký tự</div>
+          <p th:if="${contentError}" th:text="${contentError}" style="color:#ef4444;font-size:.8rem;margin-top:.3rem;">
+          </p>
+        </div>
+
+        <!-- ── FORM ACTIONS ── -->
+        <div class="form-actions">
+          <a th:href="@{/notebook}" class="btn-secondary">Hủy</a>
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <i class="bi bi-floppy save-icon"></i>
+            <i class="bi bi-arrow-repeat saving-icon" id="spinIcon" style="display:none;"></i>
+            <span id="submitLabel" th:text="${notebook.id == null ? 'Lưu ghi chú' : 'Cập nhật'}">Lưu</span>
           </button>
         </div>
-        <p style="font-size:.75rem;color:var(--text-muted);margin-top:.4rem;">
-          Màu của tag đầu tiên được chọn sẽ là màu chủ đạo của ghi chú.
-        </p>
-      </div>
 
-      <!-- ── CONTENT ── -->
-      <div style="margin-bottom:1rem;">
-        <label class="form-label" for="contentField">Nội dung</label>
-        <textarea class="form-input form-textarea" id="contentField" th:field="*{content}"
-                  placeholder="Viết nội dung ghi chú của bạn tại đây...&#10;&#10;Hỗ trợ xuống dòng, khoảng cách và định dạng tự do."
-                  rows="12" oninput="updateCharCount(this)"></textarea>
-        <div class="char-counter" id="charCounter">0 ký tự</div>
-        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}"
-           style="color:#ef4444;font-size:.8rem;margin-top:.3rem;"></p>
-      </div>
-
-      <!-- ── FORM ACTIONS ── -->
-      <div class="form-actions">
-        <a th:href="@{/notebook}" class="btn-secondary">Hủy</a>
-        <button type="submit" class="btn-submit" id="submitBtn">
-          <i class="bi bi-floppy save-icon"></i>
-          <i class="bi bi-arrow-repeat saving-icon" id="spinIcon" style="display:none;"></i>
-          <span id="submitLabel"
-                th:text="${notebook.id == null ? 'Lưu ghi chú' : 'Cập nhật'}">Lưu</span>
-        </button>
-      </div>
-
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script th:inline="javascript">
-  /* ── Dark Mode ── */
-  (function() {
-    const saved = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
-    const icon = document.getElementById('darkIcon');
-    if (icon) icon.className = saved === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-  })();
+  <script th:inline="javascript">
+    /* ── Dark Mode ── */
+    (function () {
+      const saved = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      const icon = document.getElementById('darkIcon');
+      if (icon) icon.className = saved === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+    })();
 
-  document.getElementById('darkToggle').addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const next   = isDark ? 'light' : 'dark';
-    localStorage.setItem('theme', next);
-    document.documentElement.setAttribute('data-theme', next);
-    document.getElementById('darkIcon').className = next === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-  });
-
-  /* ── Character Counter ── */
-  function updateCharCount(el) {
-    const counter = document.getElementById('charCounter');
-    const len = el.value.length;
-    counter.textContent = len.toLocaleString('vi-VN') + ' ký tự';
-    counter.style.color = len > 5000 ? '#ef4444' : 'var(--text-muted)';
-  }
-  // Init on load
-  const contentEl = document.getElementById('contentField');
-  if (contentEl) updateCharCount(contentEl);
-
-  /* ── Tag Multi-Selector ── */
-  const tagsInput  = document.getElementById('tagsInput');
-  const colorInput = document.getElementById('colorInput');
-  const tagBtns    = document.querySelectorAll('.tag-btn');
-
-  // Init selected tags from existing value
-  const existingTags  = (tagsInput.value  || '').split(',').map(t => t.trim()).filter(Boolean);
-  const existingColor = colorInput.value || '';
-  let selectedTags  = new Set(existingTags);
-  let primaryColor  = existingColor;
-
-  function refreshTagUI() {
-    tagBtns.forEach(btn => {
-      const tag = btn.dataset.tag;
-      btn.classList.toggle('selected', selectedTags.has(tag));
+    document.getElementById('darkToggle').addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
+      document.documentElement.setAttribute('data-theme', next);
+      document.getElementById('darkIcon').className = next === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
     });
-    // Sync hidden inputs
-    tagsInput.value  = [...selectedTags].join(',');
-    colorInput.value = primaryColor;
-  }
 
-  tagBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tag   = btn.dataset.tag;
-      const color = btn.dataset.color;
-
-      if (selectedTags.has(tag)) {
-        selectedTags.delete(tag);
-        // If removed tag was primary, pick next
-        if (primaryColor === color) {
-          const remaining = [...tagBtns].filter(b => selectedTags.has(b.dataset.tag));
-          primaryColor = remaining.length ? remaining[0].dataset.color : '';
-        }
-      } else {
-        selectedTags.add(tag);
-        // First tag selected becomes primary
-        if (!primaryColor) primaryColor = color;
-      }
-      refreshTagUI();
-    });
-  });
-
-  refreshTagUI(); // initial render
-
-  /* ── Sync category → auto-select matching tag ── */
-  function onCategoryChange(cat) {
-    // Add the category as a tag if not already
-    const matching = [...tagBtns].find(b => b.dataset.tag === cat);
-    if (matching && !selectedTags.has(cat)) {
-      const color = matching.dataset.color;
-      selectedTags.add(cat);
-      if (!primaryColor) primaryColor = color;
-      refreshTagUI();
+    /* ── Character Counter ── */
+    function updateCharCount(el) {
+      const counter = document.getElementById('charCounter');
+      const len = el.value.length;
+      counter.textContent = len.toLocaleString('vi-VN') + ' ký tự';
+      counter.style.color = len > 5000 ? '#ef4444' : 'var(--text-muted)';
     }
-  }
+    const contentEl = document.getElementById('contentField');
+    if (contentEl) updateCharCount(contentEl);
 
-  /* ── Submit animation ── */
-  document.getElementById('noteForm').addEventListener('submit', () => {
-    const btn   = document.getElementById('submitBtn');
-    const label = document.getElementById('submitLabel');
-    const spin  = document.getElementById('spinIcon');
-    btn.disabled = true;
-    label.textContent = 'Đang lưu...';
-    spin.style.display = 'inline';
-    document.querySelector('.save-icon').style.display = 'none';
-  });
+    /* ══════════════════════════════════════════════════════════
+       CATEGORY MULTI-SELECTOR
+    ══════════════════════════════════════════════════════════ */
 
-  /* ── Auto-save draft indicator (UX only) ── */
-  let autoSaveTimer;
-  const saveIndicator = document.getElementById('saveIndicator');
-  contentEl && contentEl.addEventListener('input', () => {
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(() => {
-      saveIndicator.style.opacity = '1';
-      setTimeout(() => { saveIndicator.style.opacity = '0'; }, 2000);
-    }, 1500);
-  });
-</script>
+    // Màu mặc định cho các category nổi tiếng (fallback cho custom)
+    const KNOWN_COLORS = {
+      'Cá nhân': '#22c55e',
+      'Công việc': '#3b82f6',
+      'Học tập': '#f59e0b',
+      'Sức khỏe': '#a855f7',
+      'Khẩn cấp': '#ef4444',
+      'Khác': '#64748b'
+    };
+    const DEFAULT_COLOR = '#6366f1';
+
+    function getCatColor(name) {
+      // Ưu tiên màu từ suggestion buttons (đã được server set)
+      const btn = document.querySelector(`.cat-suggest-btn[data-name="${CSS.escape(name)}"]`);
+      if (btn) return btn.dataset.color;
+      return KNOWN_COLORS[name] || DEFAULT_COLOR;
+    }
+
+    // State
+    const selectedCats = new Map(); // name → color
+
+    // Pre-fill từ DTO (edit mode)
+    const initialCats = /*[[${notebook.categoryNames}]]*/[];
+    initialCats.forEach(name => {
+      if (name) selectedCats.set(name.trim(), getCatColor(name.trim()));
+    });
+
+    const selectedArea = document.getElementById('selectedArea');
+    const catPlaceholder = document.getElementById('catPlaceholder');
+    const hiddenCatInputs = document.getElementById('hiddenCatInputs');
+    const catSuggestions = document.getElementById('catSuggestions');
+    const customCatInput = document.getElementById('customCatInput');
+    const colorInput = document.getElementById('colorInput');
+    const catError = document.getElementById('catError');
+
+    function refreshCatUI() {
+      // 1) Rebuild selected chips
+      // Xóa chips cũ (giữ placeholder)
+      selectedArea.querySelectorAll('.cat-selected-chip').forEach(el => el.remove());
+
+      if (selectedCats.size === 0) {
+        catPlaceholder.style.display = 'inline';
+      } else {
+        catPlaceholder.style.display = 'none';
+        selectedCats.forEach((color, name) => {
+          const chip = document.createElement('span');
+          chip.className = 'cat-selected-chip';
+          chip.style.color = color;
+          chip.style.borderColor = color;
+          chip.style.background = color + '18';
+          chip.innerHTML = `<span class="tag-dot-sm" style="background:${color};"></span>
+                          ${escHtml(name)}
+                          <span class="chip-remove" data-name="${escHtml(name)}" title="Bỏ">✕</span>`;
+          chip.querySelector('.chip-remove').addEventListener('click', () => {
+            selectedCats.delete(name);
+            refreshCatUI();
+          });
+          selectedArea.appendChild(chip);
+        });
+      }
+
+      // 2) Rebuild hidden inputs
+      hiddenCatInputs.innerHTML = '';
+      selectedCats.forEach((color, name) => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = 'categoryNames';
+        inp.value = name;
+        hiddenCatInputs.appendChild(inp);
+      });
+
+      // 3) Dim suggestion buttons that are already selected
+      catSuggestions.querySelectorAll('.cat-suggest-btn').forEach(btn => {
+        btn.classList.toggle('selected', selectedCats.has(btn.dataset.name));
+      });
+
+      // 4) Auto-set color from first selected
+      const firstColor = selectedCats.size > 0 ? selectedCats.values().next().value : '';
+      colorInput.value = firstColor;
+
+      // 5) Hide error if any category selected
+      if (selectedCats.size > 0) catError.style.display = 'none';
+    }
+
+    // Click on suggestion chips
+    catSuggestions.querySelectorAll('.cat-suggest-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.name;
+        const color = btn.dataset.color;
+        if (!selectedCats.has(name)) {
+          selectedCats.set(name, color);
+          refreshCatUI();
+        }
+      });
+    });
+
+    // Add custom category
+    function addCustomCat() {
+      const name = customCatInput.value.trim();
+      if (!name) return;
+      if (!selectedCats.has(name)) {
+        selectedCats.set(name, getCatColor(name));
+        refreshCatUI();
+      }
+      customCatInput.value = '';
+      customCatInput.focus();
+    }
+
+    // Allow Enter in custom input
+    customCatInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); addCustomCat(); }
+    });
+
+    // Initial render
+    refreshCatUI();
+
+    /* ── Submit — validate categories ── */
+    document.getElementById('noteForm').addEventListener('submit', (e) => {
+      if (selectedCats.size === 0) {
+        e.preventDefault();
+        catError.style.display = 'block';
+        catError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      // Animate submit button
+      const btn = document.getElementById('submitBtn');
+      const label = document.getElementById('submitLabel');
+      const spin = document.getElementById('spinIcon');
+      btn.disabled = true;
+      label.textContent = 'Đang lưu...';
+      spin.style.display = 'inline';
+      document.querySelector('.save-icon').style.display = 'none';
+    });
+
+    /* ── Auto-save draft indicator (UX only) ── */
+    let autoSaveTimer;
+    const saveIndicator = document.getElementById('saveIndicator');
+    contentEl && contentEl.addEventListener('input', () => {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        saveIndicator.style.opacity = '1';
+        setTimeout(() => { saveIndicator.style.opacity = '0'; }, 2000);
+      }, 1500);
+    });
+
+    /* ── Helper: escape HTML in chip labels ── */
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
 </body>
+
 </html>

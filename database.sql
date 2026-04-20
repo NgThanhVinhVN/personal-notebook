@@ -1,52 +1,69 @@
--- ============================================================
--- Database: personal_notebook_db (MySQL 8+)
--- ============================================================
--- Tạo database nếu chưa có (chạy với user có quyền):
-CREATE DATABASE IF NOT EXISTS personal_notebook_db
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-
-USE personal_notebook_db;
-
--- 1. Bảng users
-CREATE TABLE IF NOT EXISTS users (
-    id       BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+-- USERS
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
-    email    VARCHAR(255) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    email VARCHAR(255) NOT NULL UNIQUE
+);
 
--- 2. Bảng roles
-CREATE TABLE IF NOT EXISTS roles (
-    id   BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+-- ROLES
+CREATE TABLE roles (
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
 
--- 3. Bảng trung gian users_roles (Many-To-Many)
-CREATE TABLE IF NOT EXISTS users_roles (
+-- USERS_ROLES
+CREATE TABLE users_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
     PRIMARY KEY (user_id, role_id),
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
 
--- 4. Bảng notebooks
-CREATE TABLE IF NOT EXISTS notebooks (
-    id         BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title      VARCHAR(255) NOT NULL,
-    content    TEXT         NOT NULL,
-    category   VARCHAR(255) NOT NULL,
-    created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    user_id    BIGINT       NOT NULL,
-    CONSTRAINT fk_notebook_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- NOTEBOOKS (KHÔNG còn category string nữa)
+CREATE TABLE notebooks (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT fk_notebook_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
--- Insert Roles cơ bản (bỏ qua nếu đã tồn tại)
-INSERT IGNORE INTO roles (name) VALUES ('ROLE_USER'), ('ROLE_ADMIN');
+-- CATEGORIES
+CREATE TABLE categories (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    color VARCHAR(20) DEFAULT '#6366f1'
+);
 
--- Ghi chú: Hibernate (Spring Data JPA) đã được cấu hình 'update' nên bạn
--- có thể không cần phải chạy tay file SQL này nếu chạy app luôn.
--- Hệ thống cũng sẽ tự động tạo tài khoản admin/admin123 trên lần chạy đầu tiên.
+-- MANY TO MANY
+CREATE TABLE notebook_categories (
+    notebook_id BIGINT NOT NULL,
+    category_id BIGINT NOT NULL,
+    PRIMARY KEY (notebook_id, category_id),
+    CONSTRAINT fk_nc_notebook FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE,
+    CONSTRAINT fk_nc_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+-- SEED DATA
+INSERT INTO roles (name) VALUES ('ROLE_USER'), ('ROLE_ADMIN')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO categories (name, color) VALUES
+    ('Cá nhân',  '#22c55e'),
+    ('Công việc','#3b82f6'),
+    ('Học tập',  '#f59e0b'),
+    ('Sức khỏe', '#a855f7'),
+    ('Khẩn cấp', '#ef4444'),
+    ('Khác',     '#64748b')
+ON CONFLICT DO NOTHING;
+
+
+ALTER TABLE notebooks ADD COLUMN color VARCHAR(20);
+ALTER TABLE notebooks ADD COLUMN is_pinned BOOLEAN DEFAULT FALSE;
+ALTER TABLE notebooks ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+ALTER TABLE notebooks ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;

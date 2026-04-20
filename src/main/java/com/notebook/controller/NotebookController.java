@@ -1,9 +1,9 @@
 package com.notebook.controller;
 
 import com.notebook.dto.NotebookDto;
+import com.notebook.entity.Category;
 import com.notebook.entity.Notebook;
 import com.notebook.service.NotebookService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,12 +45,15 @@ public class NotebookController {
             notebooks = notebookService.findNotebooksByUser(username);
         }
 
+        List<Category> allCategories = notebookService.findAllCategories();
+
         model.addAttribute("notebooks", notebooks);
         model.addAttribute("username", username);
         model.addAttribute("q", q != null ? q : "");
         model.addAttribute("activeCategory", category != null ? category : "");
         model.addAttribute("sort", sort);
         model.addAttribute("totalCount", notebooks.size());
+        model.addAttribute("allCategories", allCategories);
         return "notebook-list";
     }
 
@@ -59,17 +61,36 @@ public class NotebookController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("notebook", new NotebookDto());
+        model.addAttribute("allCategories", notebookService.findAllCategories());
         return "notebook-form";
     }
 
     /** Save (create or update) */
     @PostMapping("/save")
-    public String saveNotebook(@Valid @ModelAttribute("notebook") NotebookDto dto,
-                               BindingResult result, Model model) {
-        if (result.hasErrors()) {
+    public String saveNotebook(@ModelAttribute("notebook") NotebookDto dto,
+                               Model model) {
+        // Validate title
+        if (!StringUtils.hasText(dto.getTitle())) {
             model.addAttribute("notebook", dto);
+            model.addAttribute("titleError", "Tiêu đề không được để trống");
+            model.addAttribute("allCategories", notebookService.findAllCategories());
             return "notebook-form";
         }
+        // Validate content
+        if (!StringUtils.hasText(dto.getContent())) {
+            model.addAttribute("notebook", dto);
+            model.addAttribute("contentError", "Nội dung không được để trống");
+            model.addAttribute("allCategories", notebookService.findAllCategories());
+            return "notebook-form";
+        }
+        // Validate categories
+        if (dto.getCategoryNames() == null || dto.getCategoryNames().isEmpty()) {
+            model.addAttribute("notebook", dto);
+            model.addAttribute("categoryError", "Phải chọn ít nhất một danh mục");
+            model.addAttribute("allCategories", notebookService.findAllCategories());
+            return "notebook-form";
+        }
+
         notebookService.saveNotebook(dto, getUsername());
         return "redirect:/notebook?success";
     }
@@ -88,12 +109,17 @@ public class NotebookController {
         dto.setId(notebook.getId());
         dto.setTitle(notebook.getTitle());
         dto.setContent(notebook.getContent());
-        dto.setCategory(notebook.getCategory());
-        dto.setTags(notebook.getTags());
-        dto.setColor(notebook.getColor());
         dto.setPinned(notebook.isPinned());
+        dto.setColor(notebook.getColor());
+
+        // Pre-fill selected categories
+        List<String> catNames = notebook.getCategories().stream()
+                .map(Category::getName)
+                .toList();
+        dto.setCategoryNames(catNames);
 
         model.addAttribute("notebook", dto);
+        model.addAttribute("allCategories", notebookService.findAllCategories());
         return "notebook-form";
     }
 
@@ -126,7 +152,7 @@ public class NotebookController {
         return "redirect:/notebook?success";
     }
 
-    // ── helpers ──────────────────────────────────────────────────────────────
+    // ── helpers ────────────────────────────────────────────────────
     private String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
