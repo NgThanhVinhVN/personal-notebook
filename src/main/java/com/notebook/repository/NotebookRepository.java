@@ -45,6 +45,18 @@ public interface NotebookRepository extends JpaRepository<Notebook, Long> {
                                                   @Param("keyword") String keyword,
                                                   @Param("category") String category);
 
+    /** sort: title Z->A */
+    @Query("SELECT n FROM Notebook n WHERE n.user = :user " +
+           "AND (:keyword IS NULL OR :keyword = '' OR " +
+           "     LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "     LOWER(n.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+           "AND (:category IS NULL OR :category = '' OR " +
+           "     EXISTS (SELECT c FROM n.categories c WHERE c.name = :category)) " +
+           "ORDER BY n.pinned DESC, n.title DESC")
+    List<Notebook> searchNotebooksAlphabeticallyDesc(@Param("user") User user,
+                                                  @Param("keyword") String keyword,
+                                                  @Param("category") String category);
+
     /** sort: createdAt DESC (mới tạo nhất) */
     @Query("SELECT n FROM Notebook n WHERE n.user = :user " +
            "AND (:keyword IS NULL OR :keyword = '' OR " +

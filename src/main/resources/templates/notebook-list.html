@@ -164,10 +164,11 @@
 
         <!-- Sort -->
         <select class="sort-select" id="sortSelect" onchange="applySort(this.value)">
-          <option value="recent" th:selected="${sort == 'recent'}">Gần nhất sửa</option>
-          <option value="newest" th:selected="${sort == 'newest'}">Mới tạo nhất</option>
-          <option value="oldest" th:selected="${sort == 'oldest'}">Cũ tạo nhất</option>
+          <option value="recent" th:selected="${sort == 'recent'}">Sửa gần nhất</option>
+          <option value="newest" th:selected="${sort == 'newest'}">Mới nhất</option>
+          <option value="oldest" th:selected="${sort == 'oldest'}">Cũ nhất</option>
           <option value="az" th:selected="${sort == 'az'}">A → Z</option>
+          <option value="za" th:selected="${sort == 'za'}">Z → A</option>
         </select>
 
         <!-- Desktop search -->

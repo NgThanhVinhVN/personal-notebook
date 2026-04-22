@@ -101,6 +101,7 @@ public class NotebookService {
 
         return switch (sortBy == null ? "recent" : sortBy.toLowerCase()) {
             case "az"     -> notebookRepository.searchNotebooksAlphabetically(user, kw, cat);
+            case "za"     -> notebookRepository.searchNotebooksAlphabeticallyDesc(user, kw, cat);
             case "newest" -> notebookRepository.searchNotebooksNewest(user, kw, cat);
             case "oldest" -> notebookRepository.searchNotebooksOldest(user, kw, cat);
             default       -> notebookRepository.searchNotebooks(user, kw, cat);

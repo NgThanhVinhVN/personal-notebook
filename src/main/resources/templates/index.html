@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,171 +8,238 @@
   <title>MyNotebook — Ghi chú thông minh cho mọi người</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" th:href="@{/css/style.css}">
 
   <style>
+    .hero-title {
+      padding-bottom: 5px;
+    }
+
     /* Extra landing styles */
-    .landing-nav { display:flex; justify-content:space-between; align-items:center; }
-    .landing-nav-links { display:flex; gap:.5rem; align-items:center; }
+    .landing-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .landing-nav-links {
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+    }
+
     .nav-link-pill {
-      padding:.45rem 1rem; border-radius:10px; font-size:.875rem; font-weight:600;
-      text-decoration:none; color:var(--text-secondary);
-      transition:all 150ms ease;
+      padding: .45rem 1rem;
+      border-radius: 10px;
+      font-size: .875rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-secondary);
+      transition: all 150ms ease;
     }
-    .nav-link-pill:hover { background:var(--bg-raised); color:var(--text-primary); }
+
+    .nav-link-pill:hover {
+      background: var(--bg-raised);
+      color: var(--text-primary);
+    }
+
     .nav-link-pill.cta {
-      background:linear-gradient(135deg,var(--brand-500),var(--brand-600));
-      color:#fff; box-shadow:0 2px 8px rgba(99,102,241,.3);
+      background: linear-gradient(135deg, var(--brand-500), var(--brand-600));
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, .3);
     }
-    .nav-link-pill.cta:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(99,102,241,.4); color:#fff; }
+
+    .nav-link-pill.cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, .4);
+      color: #fff;
+    }
 
     @keyframes floatY {
-      0%,100%{ transform:translateY(0); }
-      50%{ transform:translateY(-12px); }
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-12px);
+      }
     }
-    .float-anim { animation:floatY 4s ease-in-out infinite; }
+
+    .float-anim {
+      animation: floatY 4s ease-in-out infinite;
+    }
 
     .stats-bar {
-      display:flex; gap:2rem; justify-content:center; flex-wrap:wrap;
-      margin:3rem 0 0;
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 3rem 0 0;
     }
-    .stat-item { text-align:center; }
-    .stat-num { font-size:2rem; font-weight:900; letter-spacing:-1px; color:var(--brand-500); }
-    .stat-label { font-size:.8rem; color:var(--text-muted); font-weight:500; }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--brand-500);
+    }
+
+    .stat-label {
+      font-size: .8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
     footer {
-      text-align:center;
-      padding:2.5rem 1.5rem;
-      border-top:1px solid var(--border-light);
-      color:var(--text-muted);
-      font-size:.85rem;
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      border-top: 1px solid var(--border-light);
+      color: var(--text-muted);
+      font-size: .85rem;
     }
   </style>
 </head>
+
 <body>
 
-<!-- ══ NAVBAR ══ -->
-<nav class="app-navbar landing-nav">
-  <a th:href="@{/}" class="navbar-brand">
-    <div class="brand-icon"><i class="bi bi-journal-text"></i></div>
-    MyNotebook
-  </a>
-
-  <div class="landing-nav-links">
-    <button class="dark-toggle" id="darkToggle" title="Chế độ tối/sáng" type="button">
-      <i class="bi bi-moon-stars" id="darkIcon"></i>
-    </button>
-
-    <!-- Not logged in -->
-    <a th:href="@{/login}" class="nav-link-pill" sec:authorize="!isAuthenticated()">Đăng nhập</a>
-    <a th:href="@{/register}" class="nav-link-pill cta" sec:authorize="!isAuthenticated()">Bắt đầu miễn phí →</a>
-
-    <!-- Logged in USER -->
-    <a th:href="@{/notebook}" class="nav-link-pill" sec:authorize="hasRole('USER')">
-      <i class="bi bi-journals me-1"></i> Sổ tay của tôi
+  <!-- ══ NAVBAR ══ -->
+  <nav class="app-navbar landing-nav">
+    <a th:href="@{/}" class="navbar-brand">
+      <div class="brand-icon"><i class="bi bi-journal-text"></i></div>
+      MyNotebook
     </a>
-    <div class="dropdown" sec:authorize="isAuthenticated()">
-      <button class="user-menu-btn dropdown-toggle" data-bs-toggle="dropdown" type="button">
-        <div class="user-avatar" id="userAvatarInitial"></div>
-        <span sec:authentication="name">User</span>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><a th:href="@{/notebook}" class="dropdown-item" sec:authorize="hasRole('USER')">
-          <i class="bi bi-journals me-2"></i>Sổ tay của tôi</a></li>
-        <li><a th:href="@{/admin/dashboard}" class="dropdown-item" sec:authorize="hasRole('ADMIN')">
-          <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li>
-          <form th:action="@{/logout}" method="post">
-            <button class="dropdown-item text-danger-custom">
-              <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
-            </button>
-          </form>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
 
-<!-- ══ HERO ══ -->
-<section class="hero" style="position:relative;overflow:hidden;">
-  <!-- Subtle blobs -->
-  <div style="position:absolute;top:-80px;right:-80px;width:400px;height:400px;
+    <div class="landing-nav-links">
+      <button class="dark-toggle" id="darkToggle" title="Chế độ tối/sáng" type="button">
+        <i class="bi bi-moon-stars" id="darkIcon"></i>
+      </button>
+
+      <!-- Not logged in -->
+      <a th:href="@{/login}" class="nav-link-pill" sec:authorize="!isAuthenticated()">Đăng nhập</a>
+      <a th:href="@{/register}" class="nav-link-pill cta" sec:authorize="!isAuthenticated()">Bắt đầu miễn phí →</a>
+
+      <!-- Logged in USER -->
+      <a th:href="@{/notebook}" class="nav-link-pill" sec:authorize="hasRole('USER')">
+        <i class="bi bi-journals me-1"></i> Sổ tay của tôi
+      </a>
+      <div class="dropdown" sec:authorize="isAuthenticated()">
+        <button class="user-menu-btn dropdown-toggle" data-bs-toggle="dropdown" type="button">
+          <div class="user-avatar" id="userAvatarInitial"></div>
+          <span sec:authentication="name">User</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a th:href="@{/notebook}" class="dropdown-item" sec:authorize="hasRole('USER')">
+              <i class="bi bi-journals me-2"></i>Sổ tay của tôi</a></li>
+          <li><a th:href="@{/admin/dashboard}" class="dropdown-item" sec:authorize="hasRole('ADMIN')">
+              <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li>
+            <form th:action="@{/logout}" method="post">
+              <button class="dropdown-item text-danger-custom">
+                <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero" style="position:relative;overflow:hidden;">
+    <!-- Subtle blobs -->
+    <div style="position:absolute;top:-80px;right:-80px;width:400px;height:400px;
        border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.12),transparent 70%);
        pointer-events:none;"></div>
-  <div style="position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;
+    <div style="position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;
        border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,.1),transparent 70%);
        pointer-events:none;"></div>
 
-  <!-- Badge -->
-  <div class="hero-badge">
-    <i class="bi bi-stars"></i> Smart Note App 2026
-  </div>
+    <!-- Badge -->
+    <div class="hero-badge">
+      <i class="bi bi-stars"></i> Smart Note App 2026
+    </div>
 
-  <!-- Title with typed effect -->
-  <h1 class="hero-title" id="heroTitle">Ghi chú thông minh,<br>mọi lúc mọi nơi</h1>
+    <!-- Title with typed effect -->
+    <h1 class="hero-title" id="heroTitle">Ghi chú thông minh,<br>mọi lúc mọi nơi</h1>
 
-  <p class="hero-sub">
-    Lưu trữ ý tưởng, tổ chức công việc và tìm kiếm cực nhanh với hệ thống tag màu sắc.<br>
-    Thiết kế đẹp, tối giản — xây dựng bằng Spring Boot &amp; Java.
-  </p>
+    <p class="hero-sub">
+      Lưu trữ ý tưởng, tổ chức công việc và tìm kiếm cực nhanh với hệ thống tag màu sắc.<br>
+      Thiết kế đẹp, tối giản — xây dựng bằng Spring Boot &amp; Java.
+    </p>
 
-  <!-- CTAs -->
-  <div class="hero-actions">
-    <div sec:authorize="!isAuthenticated()">
-      <a th:href="@{/register}" class="btn-hero-primary">
-        <i class="bi bi-rocket-takeoff"></i> Bắt đầu miễn phí
+    <!-- CTAs -->
+    <div class="hero-actions">
+      <div sec:authorize="!isAuthenticated()">
+        <a th:href="@{/register}" class="btn-hero-primary">
+          <i class="bi bi-rocket-takeoff"></i> Bắt đầu miễn phí
+        </a>
+      </div>
+      <div sec:authorize="hasRole('USER')">
+        <a th:href="@{/notebook}" class="btn-hero-primary">
+          <i class="bi bi-journals"></i> Tới Sổ tay của bạn
+        </a>
+      </div>
+      <div sec:authorize="hasRole('ADMIN')">
+        <a th:href="@{/admin/dashboard}" class="btn-hero-primary">
+          <i class="bi bi-speedometer2"></i> Admin Dashboard
+        </a>
+      </div>
+      <a th:href="@{/login}" class="btn-hero-ghost" sec:authorize="!isAuthenticated()">
+        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
       </a>
     </div>
-    <div sec:authorize="hasRole('USER')">
-      <a th:href="@{/notebook}" class="btn-hero-primary">
-        <i class="bi bi-journals"></i> Tới Sổ tay của bạn
-      </a>
-    </div>
-    <div sec:authorize="hasRole('ADMIN')">
-      <a th:href="@{/admin/dashboard}" class="btn-hero-primary">
-        <i class="bi bi-speedometer2"></i> Admin Dashboard
-      </a>
-    </div>
-    <a th:href="@{/login}" class="btn-hero-ghost" sec:authorize="!isAuthenticated()">
-      <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
-    </a>
-  </div>
 
-  <!-- Mock notebook card floating -->
-  <div class="float-anim" style="max-width:420px;margin:3.5rem auto 0;
+    <!-- Mock notebook card floating -->
+    <div class="float-anim" style="max-width:420px;margin:3.5rem auto 0;
        background:var(--card-bg);border:1.5px solid var(--card-border);
        border-radius:20px;padding:1.5rem;box-shadow:0 20px 60px rgba(99,102,241,.14);
        text-align:left;">
-    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;">
-      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#ec4899);
+      <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;">
+        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#ec4899);
            display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;">
-        <i class="bi bi-journal-text"></i>
+          <i class="bi bi-journal-text"></i>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.95rem;">Kế hoạch Q2 2026</div>
+          <div style="font-size:.75rem;color:var(--text-muted);">Cập nhật vừa xong</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:.3rem;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#3b82f6;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></span>
+        </div>
       </div>
-      <div>
-        <div style="font-weight:700;font-size:.95rem;">Kế hoạch Q2 2026</div>
-        <div style="font-size:.75rem;color:var(--text-muted);">Cập nhật vừa xong</div>
-      </div>
-      <div style="margin-left:auto;display:flex;gap:.3rem;">
-        <span style="width:8px;height:8px;border-radius:50%;background:#3b82f6;"></span>
-        <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>
-        <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></span>
+      <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.6;margin-bottom:.75rem;">
+        Tập trung vào việc hoàn thiện sản phẩm, mở rộng tính năng AI và tuyển thêm 2 thành viên cho team...
+      </p>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <span
+          style="padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(59,130,246,.12);color:#3b82f6;">🔵
+          Công việc</span>
+        <span
+          style="padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(239,68,68,.12);color:#ef4444;">🔴
+          Khẩn cấp</span>
+        <span
+          style="padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(245,158,11,.12);color:#f59e0b;">🟡
+          Học tập</span>
       </div>
     </div>
-    <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.6;margin-bottom:.75rem;">
-      Tập trung vào việc hoàn thiện sản phẩm, mở rộng tính năng AI và tuyển thêm 2 thành viên cho team...
-    </p>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-      <span style="padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(59,130,246,.12);color:#3b82f6;">🔵 Công việc</span>
-      <span style="padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(239,68,68,.12);color:#ef4444;">🔴 Khẩn cấp</span>
-      <span style="padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:600;background:rgba(245,158,11,.12);color:#f59e0b;">🟡 Học tập</span>
-    </div>
-  </div>
 
-  <!-- Stats -->
-  <div class="stats-bar">
+    <!-- Stats -->
+    <!-- <div class="stats-bar">
     <div class="stat-item">
       <div class="stat-num">∞</div>
       <div class="stat-label">Ghi chú không giới hạn</div>
@@ -189,102 +256,105 @@
       <div class="stat-num">🌙</div>
       <div class="stat-label">Dark mode tích hợp</div>
     </div>
-  </div>
-</section>
+  </div> -->
+  </section>
 
-<!-- ══ FEATURES ══ -->
-<div class="features-grid">
-  <div class="feature-card">
-    <div class="feature-icon" style="background:rgba(99,102,241,.12);color:var(--brand-500);">
-      <i class="bi bi-search"></i>
+  <!-- ══ FEATURES ══ -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(99,102,241,.12);color:var(--brand-500);">
+        <i class="bi bi-search"></i>
+      </div>
+      <h3 class="feature-title">Tìm kiếm thông minh</h3>
+      <p class="feature-text">Tìm ngay lập tức theo tiêu đề hoặc nội dung. Lọc theo danh mục, sắp xếp theo thời gian
+        hoặc A-Z.</p>
     </div>
-    <h3 class="feature-title">Tìm kiếm thông minh</h3>
-    <p class="feature-text">Tìm ngay lập tức theo tiêu đề hoặc nội dung. Lọc theo danh mục, sắp xếp theo thời gian hoặc A-Z.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;">
-      <i class="bi bi-tags"></i>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;">
+        <i class="bi bi-tags"></i>
+      </div>
+      <h3 class="feature-title">Hệ thống Tag màu sắc</h3>
+      <p class="feature-text">6 màu tag trực quan — nhìn một cái là biết ngay loại ghi chú. Multi-tag trên từng ghi chú.
+      </p>
     </div>
-    <h3 class="feature-title">Hệ thống Tag màu sắc</h3>
-    <p class="feature-text">6 màu tag trực quan — nhìn một cái là biết ngay loại ghi chú. Multi-tag trên từng ghi chú.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon" style="background:rgba(34,197,94,.12);color:#22c55e;">
-      <i class="bi bi-lightning-charge"></i>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(34,197,94,.12);color:#22c55e;">
+        <i class="bi bi-lightning-charge"></i>
+      </div>
+      <h3 class="feature-title">Quick Add tức thì</h3>
+      <p class="feature-text">Gõ tiêu đề → Enter → xong. Không cần vào trang tạo mới. Giảm friction tối đa.</p>
     </div>
-    <h3 class="feature-title">Quick Add tức thì</h3>
-    <p class="feature-text">Gõ tiêu đề → Enter → xong. Không cần vào trang tạo mới. Giảm friction tối đa.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon" style="background:rgba(168,85,247,.12);color:#a855f7;">
-      <i class="bi bi-pin-angle"></i>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(168,85,247,.12);color:#a855f7;">
+        <i class="bi bi-pin-angle"></i>
+      </div>
+      <h3 class="feature-title">Ghim ghi chú quan trọng</h3>
+      <p class="feature-text">Pin những ghi chú cần xem ngay lên đầu danh sách. Toggle ngay không cần reload trang.</p>
     </div>
-    <h3 class="feature-title">Ghim ghi chú quan trọng</h3>
-    <p class="feature-text">Pin những ghi chú cần xem ngay lên đầu danh sách. Toggle ngay không cần reload trang.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon" style="background:rgba(15,23,42,.08);color:var(--text-primary);">
-      <i class="bi bi-moon-stars"></i>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(15,23,42,.08);color:var(--text-primary);">
+        <i class="bi bi-moon-stars"></i>
+      </div>
+      <h3 class="feature-title">Dark Mode</h3>
+      <p class="feature-text">Giao diện tối đẹp mắt, lưu theo thiết bị. Chuyển đổi tức thì không giật lag.</p>
     </div>
-    <h3 class="feature-title">Dark Mode</h3>
-    <p class="feature-text">Giao diện tối đẹp mắt, lưu theo thiết bị. Chuyển đổi tức thì không giật lag.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon" style="background:rgba(239,68,68,.1);color:#ef4444;">
-      <i class="bi bi-shield-lock"></i>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(239,68,68,.1);color:#ef4444;">
+        <i class="bi bi-shield-lock"></i>
+      </div>
+      <h3 class="feature-title">Bảo mật riêng tư</h3>
+      <p class="feature-text">Mỗi người dùng chỉ thấy ghi chú của chính mình. Xác thực Spring Security 6.</p>
     </div>
-    <h3 class="feature-title">Bảo mật riêng tư</h3>
-    <p class="feature-text">Mỗi người dùng chỉ thấy ghi chú của chính mình. Xác thực Spring Security 6.</p>
   </div>
-</div>
 
-<!-- ══ FOOTER ══ -->
-<footer>
-  <div>
-    <strong style="color:var(--brand-500);">MyNotebook</strong> &copy; 2026 —
-    Built with ☕ Spring Boot 3, Spring Security 6, PostgreSQL &amp; Thymeleaf.
-  </div>
-</footer>
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div>
+      <strong style="color:var(--brand-500);">MyNotebook</strong> &copy; 2026 —
+      Built with ☕ Spring Boot 3, Spring Security 6, PostgreSQL &amp; Thymeleaf.
+    </div>
+  </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:inline="javascript">
-  /* Dark Mode */
-  (function() {
-    const saved = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
-    const icon = document.getElementById('darkIcon');
-    if (icon) icon.className = saved === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-  })();
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:inline="javascript">
+    /* Dark Mode */
+    (function () {
+      const saved = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      const icon = document.getElementById('darkIcon');
+      if (icon) icon.className = saved === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+    })();
 
-  document.getElementById('darkToggle').addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const next   = isDark ? 'light' : 'dark';
-    localStorage.setItem('theme', next);
-    document.documentElement.setAttribute('data-theme', next);
-    document.getElementById('darkIcon').className = next === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-  });
-
-  /* User avatar initial */
-  const authName = /*[[${#authentication != null ? #authentication.name : ''}]]*/ '';
-  const avatarEl = document.getElementById('userAvatarInitial');
-  if (avatarEl && authName) avatarEl.textContent = authName.charAt(0).toUpperCase();
-
-  /* Card stagger on features */
-  document.querySelectorAll('.feature-card').forEach((card, i) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = `opacity .5s ease ${i * 80}ms, transform .5s ease ${i * 80}ms`;
-  });
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.opacity = '1';
-        e.target.style.transform = 'translateY(0)';
-        observer.unobserve(e.target);
-      }
+    document.getElementById('darkToggle').addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
+      document.documentElement.setAttribute('data-theme', next);
+      document.getElementById('darkIcon').className = next === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
     });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.feature-card').forEach(c => observer.observe(c));
-</script>
+
+    /* User avatar initial */
+    const authName = /*[[${#authentication != null ? #authentication.name : ''}]]*/ '';
+    const avatarEl = document.getElementById('userAvatarInitial');
+    if (avatarEl && authName) avatarEl.textContent = authName.charAt(0).toUpperCase();
+
+    /* Card stagger on features */
+    document.querySelectorAll('.feature-card').forEach((card, i) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      card.style.transition = `opacity .5s ease ${i * 80}ms, transform .5s ease ${i * 80}ms`;
+    });
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.feature-card').forEach(c => observer.observe(c));
+  </script>
 </body>
+
 </html>
