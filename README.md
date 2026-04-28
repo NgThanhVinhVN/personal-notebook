@@ -1,6 +1,6 @@
 # Personal Notebook Management
 
-Dự án Web Quản lý Sổ tay Cá nhân. Xây dựng bằng Java Spring Boot 3.x (thay thế cho 4.x chưa phát hành), Spring Security 6, Spring Data JPA, PostgreSQL, và giao diện Thymeleaf + Bootstrap 5.
+Dự án Web Quản lý Sổ tay Cá nhân. Xây dựng bằng Java Spring Boot 3.x, Spring Security 6, Spring Data JPA, PostgreSQL, và giao diện Thymeleaf + Bootstrap 5.
 
 ## Chức năng
 - **Người dùng**: Đăng ký, đăng nhập, Quản lý Sổ tay cá nhân (CRUD trọn vẹn, tìm đúng dữ liệu của mình).
