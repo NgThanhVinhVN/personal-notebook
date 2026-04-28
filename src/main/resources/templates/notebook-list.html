@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:attr="data-theme=${theme}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  th:attr="data-theme=${theme}">
 
 <head>
   <meta charset="UTF-8">
@@ -25,7 +26,7 @@
     }
 
     .cat-delete-btn {
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       margin-left: auto;
@@ -40,10 +41,14 @@
       line-height: 1;
       transition: background .15s, color .15s;
       flex-shrink: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .15s ease;
     }
 
     .sidebar-item:hover .cat-delete-btn {
-      display: flex;
+      opacity: 1;
+      visibility: visible;
     }
 
     .cat-delete-btn:hover {
@@ -139,7 +144,8 @@
         <i class="bi bi-trash3 sidebar-icon"></i>
         Thùng rác
       </a>
-      <a th:href="@{/notebook/create}" class="sidebar-item" style="color:var(--brand-500);font-weight:700;margin-top:5px;">
+      <a th:href="@{/notebook/create}" class="sidebar-item"
+        style="color:var(--brand-500);font-weight:700;margin-top:5px;">
         <i class="bi bi-plus-circle sidebar-icon"></i>
         Tạo ghi chú mới
       </a>
@@ -330,7 +336,7 @@
       document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
       darkIcon.className = dark ? 'bi bi-sun' : 'bi bi-moon-stars';
     }
-    
+
     // Check current theme applied via Thymeleaf
     const currentTheme = document.documentElement.getAttribute('data-theme');
     applyTheme(currentTheme === 'dark');
@@ -339,14 +345,14 @@
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const nextTheme = isDark ? 'light' : 'dark';
       applyTheme(!isDark);
-      
+
       // Save practically using cookies
       const formData = new URLSearchParams();
       formData.append('theme', nextTheme);
       fetch('/api/settings/theme', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: formData
       }).catch(err => console.error('Failed to save theme cookie:', err));
