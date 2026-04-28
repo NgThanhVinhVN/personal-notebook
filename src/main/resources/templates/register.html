@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${theme}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký — MyNotebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <div class="auth-card" style="max-width:520px;">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon"><i class="bi bi-person-plus"></i></div>
+      <h2>Tạo tài khoản mới</h2>
+      <p>Bắt đầu ghi chú thông minh ngay hôm nay — miễn phí</p>
+    </div>
+
+    <!-- Success -->
+    <div th:if="${param.success}"
+         style="background:rgba(34,197,94,.1);color:#15803d;border:1px solid rgba(34,197,94,.25);
+                border-radius:10px;padding:.75rem 1rem;font-size:.85rem;font-weight:500;
+                text-align:center;margin-bottom:1.25rem;">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      Đăng ký thành công! <a th:href="@{/login}" style="color:#15803d;font-weight:700;">Đăng nhập ngay →</a>
+    </div>
+
+    <!-- Form -->
+    <form th:action="@{/register/save}" method="post" th:object="${user}" class="auth-form">
+
+      <div class="form-group">
+        <label class="form-label" for="regUsername">Tên đăng nhập</label>
+        <input type="text" class="form-control" id="regUsername" th:field="*{username}"
+               placeholder="username" autocomplete="username">
+        <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+           style="color:#ef4444;font-size:.78rem;margin-top:.3rem;"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regFullName">Họ và tên</label>
+        <input type="text" class="form-control" id="regFullName" th:field="*{fullName}"
+               placeholder="Nguyễn Văn A" autocomplete="name">
+        <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"
+           style="color:#ef4444;font-size:.78rem;margin-top:.3rem;"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regEmail">Email</label>
+        <input type="email" class="form-control" id="regEmail" th:field="*{email}"
+               placeholder="you@example.com" autocomplete="email">
+        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+           style="color:#ef4444;font-size:.78rem;margin-top:.3rem;"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regPassword">Mật khẩu</label>
+        <input type="password" class="form-control" id="regPassword" th:field="*{password}"
+               placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" required minlength="6">
+        <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+           style="color:#ef4444;font-size:.78rem;margin-top:.3rem;"></p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regConfirmPassword">Nhập lại mật khẩu</label>
+        <input type="password" class="form-control" id="regConfirmPassword" name="confirmPassword"
+               placeholder="Nhập lại mật khẩu" autocomplete="new-password" required minlength="6">
+        <p id="confirmPasswordError" style="color:#ef4444;font-size:.78rem;margin-top:.3rem;display:none;">Mật khẩu nhập lại không khớp</p>
+      </div>
+
+      <button type="submit" class="auth-submit" style="margin-top:.5rem;">
+        <i class="bi bi-rocket-takeoff me-2"></i> Tạo tài khoản
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Đã có tài khoản? <a th:href="@{/login}">Đăng nhập →</a><br>
+      <a th:href="@{/}" style="color:var(--text-muted);font-size:.8rem;">&larr; Về trang chủ</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* Dark mode (Cookie based) */
+  (function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+    const form = document.querySelector('.auth-form');
+    const pwd = document.getElementById('regPassword');
+    const confirmPwd = document.getElementById('regConfirmPassword');
+    const errorMsg = document.getElementById('confirmPasswordError');
+
+    if (form && pwd && confirmPwd) {
+      form.addEventListener('submit', function(e) {
+        if (pwd.value !== confirmPwd.value) {
+          e.preventDefault();
+          errorMsg.style.display = 'block';
+          confirmPwd.focus();
+        } else {
+          errorMsg.style.display = 'none';
+        }
+      });
+    }
+
+    if (window.history.replaceState) {
+      const url = new URL(window.location);
+      ['success', 'error'].forEach(param => url.searchParams.delete(param));
+      window.history.replaceState(null, null, url.toString());
+    }
+  })();
+</script>
+</body>
+</html>

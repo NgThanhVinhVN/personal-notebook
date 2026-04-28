@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${theme}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập — MyNotebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon"><i class="bi bi-journal-text"></i></div>
+      <h2>Chào mừng trở lại!</h2>
+      <p>Đăng nhập vào tài khoản MyNotebook của bạn</p>
+    </div>
+
+    <!-- Alerts -->
+    <div th:if="${param.error}"
+         style="background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.25);
+                border-radius:10px;padding:.75rem 1rem;font-size:.85rem;font-weight:500;
+                text-align:center;margin-bottom:1.25rem;">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <span th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null and session.SPRING_SECURITY_LAST_EXCEPTION.class.name == 'org.springframework.security.authentication.DisabledException'}">
+        Tài khoản đang bị khóa do vi phạm tiêu chuẩn cộng đồng.
+      </span>
+      <span th:unless="${session.SPRING_SECURITY_LAST_EXCEPTION != null and session.SPRING_SECURITY_LAST_EXCEPTION.class.name == 'org.springframework.security.authentication.DisabledException'}">
+        Tên đăng nhập hoặc mật khẩu không đúng!
+      </span>
+    </div>
+    <div th:if="${param.logout}"
+         style="background:rgba(34,197,94,.1);color:#15803d;border:1px solid rgba(34,197,94,.25);
+                border-radius:10px;padding:.75rem 1rem;font-size:.85rem;font-weight:500;
+                text-align:center;margin-bottom:1.25rem;">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      Đã đăng xuất thành công!
+    </div>
+
+    <!-- Form -->
+    <form th:action="@{/login}" method="post" class="auth-form">
+      <div class="form-group">
+        <label class="form-label" for="username">Tên đăng nhập</label>
+        <input type="text" class="form-control" id="username" name="username"
+               placeholder="Nhập tên đăng nhập" required autofocus autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Mật khẩu</label>
+        <input type="password" class="form-control" id="password" name="password"
+               placeholder="Nhập mật khẩu" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="auth-submit" style="margin-top:.5rem;">
+        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Chưa có tài khoản? <a th:href="@{/register}">Đăng ký miễn phí →</a><br>
+      <a th:href="@{/}" style="color:var(--text-muted);font-size:.8rem;">&larr; Về trang chủ</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+    if (window.history.replaceState) {
+      const url = new URL(window.location);
+      ['error', 'logout'].forEach(param => url.searchParams.delete(param));
+      window.history.replaceState(null, null, url.toString());
+    }
+  })();
+</script>
+</body>
+</html>

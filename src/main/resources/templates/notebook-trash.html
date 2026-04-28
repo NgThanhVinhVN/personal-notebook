@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:attr="data-theme=${theme}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thùng rác — MyNotebook</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+  <!-- TOP NAVBAR -->
+  <nav class="app-navbar">
+    <a th:href="@{/}" class="navbar-brand">
+      <div class="brand-icon"><i class="bi bi-journal-text"></i></div>
+      MyNotebook
+    </a>
+    <div class="navbar-actions" style="margin-left:auto;">
+      <button class="dark-toggle" id="darkToggle" title="Chuyển chế độ tối/sáng" type="button">
+        <i class="bi bi-moon-stars" id="darkIcon"></i>
+      </button>
+      <a th:href="@{/notebook}" class="user-menu-btn">
+        <i class="bi bi-arrow-left"></i> Quay lại Sổ tay
+      </a>
+    </div>
+  </nav>
+
+  <!-- APP SHELL -->
+  <div class="app-shell pb-5">
+    <!-- MAIN CONTENT -->
+    <main class="app-main w-100 px-4" style="max-width: 1200px; margin: 0 auto;">
+      
+      <!-- Alerts -->
+      <div th:if="${param.deleted}" class="app-alert app-alert-success mt-3" id="alertDeleted">
+        <i class="bi bi-check-circle-fill"></i> Đã xóa vĩnh viễn ghi chú!
+      </div>
+      <div th:if="${param.restored}" class="app-alert app-alert-success mt-3" id="alertRestored">
+        <i class="bi bi-check-circle-fill"></i> Đã khôi phục ghi chú thành công!
+      </div>
+
+      <!-- Toolbar -->
+      <div class="content-toolbar mt-4">
+        <h1 id="page-title">Thùng rác</h1>
+        <p class="text-muted mb-0">Các ghi chú đã xoá của bạn.</p>
+      </div>
+
+      <!-- Notes grid -->
+      <div class="notes-grid" id="notesGrid">
+        <div class="empty-state" th:if="${notebooks.empty}">
+          <i class="bi bi-trash3" style="font-size: 3.5rem; color: var(--border-mid); display: block; margin-bottom: 1rem;"></i>
+          <h3>Thùng rác trống</h3>
+          <p>Không có ghi chú nào trong thùng rác.</p>
+        </div>
+
+        <!-- Note cards -->
+        <div th:each="nb : ${notebooks}" class="note-card"
+          th:style="|--note-color: ${nb.color != null and !nb.color.isEmpty() ? nb.color : '#6366f1'}|"
+          th:id="'card-' + ${nb.id}">
+
+          <div class="note-card-head">
+            <h2 class="note-title" th:text="${nb.title}">Tiêu đề</h2>
+            <div class="note-actions">
+              <a th:href="@{/notebook/restore/{id}(id=${nb.id})}" class="note-action-btn edit-btn text-success" title="Khôi phục">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </a>
+              <a th:href="@{/notebook/force-delete/{id}(id=${nb.id})}" class="note-action-btn delete-btn" onclick="return confirm('Xoá vĩnh viễn ghi chú này? Thao tác không thể hoàn tác.')" title="Xóa vĩnh viễn">
+                <i class="bi bi-x-circle text-danger"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="note-tags" th:if="${!nb.categories.empty}">
+            <span class="note-tag" th:each="cat : ${nb.categories}"
+              th:style="|--tag-bg: ${cat.color}22; --tag-color: ${cat.color}|">
+              <span class="tag-dot" th:style="|background: ${cat.color}|"></span>
+              <span th:text="${cat.name}"></span>
+            </span>
+          </div>
+
+          <p class="note-preview" th:text="${#strings.abbreviate(nb.content, 160)}"></p>
+
+          <div class="note-footer">
+            <span class="note-date">
+              <i class="bi bi-clock"></i> Đã xoá gần đây
+            </span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    ['alertDeleted', 'alertRestored'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) setTimeout(() => el.style.display = 'none', 4000);
+    });
+    // handle theme toggle simply
+    document.getElementById('darkToggle').addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('darkIcon').className = isDark ? 'bi bi-moon-stars' : 'bi bi-sun';
+      document.cookie = `theme=${isDark ? 'light' : 'dark'}; path=/; max-age=31536000`;
+    });
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    if (currentTheme) document.getElementById('darkIcon').className = currentTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+  </script>
+</body>
+</html>
